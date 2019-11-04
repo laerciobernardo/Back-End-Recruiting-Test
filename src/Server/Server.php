@@ -60,7 +60,7 @@ class Server
     private function handlerpayloadError()
     {
         http_response_code(500);
-        echo json_encode(array('error' => 'Hey dude! The request needs some payload'));
+        echo json_encode(array('error' => "Bad move! Try removing the task instead of deleting its content."));
     }
 
     private function handlerController($url, $method, $payload)

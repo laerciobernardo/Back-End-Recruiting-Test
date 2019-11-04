@@ -5,24 +5,27 @@ namespace App\Models;
 use App\DB\DBMock;
 
 class Task {
-   private $uui = '';
+   private $uui = "";
    private $type = "";
    private $content = "";
    private $sortOrder = 0;
    private $done = false;
    private $dateCreated = "";
-   private static $store;
 
    public function __construct($type, $content, $sortOrder){
       $this->uuid = md5(uniqid(rand(), true));
       $this->type = $type;
       $this->content = $content;
       $this->sortOrder = $sortOrder;
-      $this->dateCreated = new Date();
+      $this->dateCreated = new \DateTime();
    }
 
    public function setAsDone($uuid){
       $this->$done = true;
+   }
+
+   public function getUUID(){
+      return $this->$uuid;
    }
 
    public function setType($type){
@@ -55,10 +58,9 @@ class Task {
    
    //Reflector mehods to DBMock
    public static function save($domain){
-      if(!isset(self::$store)){
-         self::$store = DBMock::getInstance();
-      }
-      return self::$store->add($domain);
+      $db = DBMock::getInstance();
+      $saved = $db->add($domain);
+      return $saved;
    }
 
    public static function update($uuid, $domain){
@@ -76,10 +78,7 @@ class Task {
    }
 
    public static function find(){
-      if(!isset(self::$store)){
-         self::$store = DBMock::getInstance();
-      }
-      return self::$store->findAll();
+      return DBMock::getInstance()->findAll();
    }
 
    public static function findOne($uuid){
