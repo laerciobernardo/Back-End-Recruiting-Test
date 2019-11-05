@@ -51,7 +51,7 @@ class Server
 
     private function getpayload($server)
     {
-        if (!$server['HTTP_CONTENT_LENGTH'] || !$server['CONTENT_LENGTH']) {
+        if (!isset($server['HTTP_CONTENT_LENGTH']) || !isset($server['CONTENT_LENGTH']) || !$server['HTTP_CONTENT_LENGTH'] || !$server['CONTENT_LENGTH']) {
             return null;
         }
         return file_get_contents('php://input');
@@ -60,7 +60,7 @@ class Server
     private function handlerpayloadError()
     {
         http_response_code(500);
-        echo json_encode(array('error' => 'Hey dude! The request needs some payload'));
+        echo json_encode(array('error' => "Bad move! Try removing the task instead of deleting its content."));
     }
 
     private function handlerController($url, $method, $payload)
@@ -82,15 +82,15 @@ class Server
         $className = ucfirst($path[0]);
         $param = isset($path[1]) ? $path[1] : null;
 
-        $className = "App\Controllers\\".$className;
+        $className = "App\Controllers\\".$className."Ctrl";
 
-        echo "<pre>";
-        var_dump(array(
-            'className' => $className,
-            'method' => $method,
-            'param' => $param,
-            'payload' => json_decode($payload, true)
-        ));
+      //   echo "<pre>";
+      //   var_dump(array(
+      //       'className' => $className,
+      //       'method' => $method,
+      //       'param' => $param,
+      //       'payload' => json_decode($payload, true)
+      //   ));
 
 
         if (!class_exists($className)) {
