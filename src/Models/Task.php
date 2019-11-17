@@ -11,13 +11,32 @@ class Task {
    private $sortOrder = 0;
    private $done = false;
    private $dateCreated = "";
+   private $errorMessage = "";
+   private $typesAllowed = ["shopping", "work"];
 
    public function __construct($type, $content, $sortOrder){
+      $this->validateType($type);
+      $this->validateContent($content);
+
       $this->uuid = md5(uniqid(rand(), true));
       $this->type = $type;
       $this->content = $content;
       $this->sortOrder = $sortOrder;
       $this->dateCreated = new \DateTime();
+   }
+
+   private function validateType($type){
+      if(!\in_array($type, $this->$typesAllowed)){
+         $this->setErrorMessage("The task type you provided is not supported. You can only use shopping or work.");
+         return null;
+      }
+   }
+
+   private function validateContent($content){
+      if(!isset($content) || empty($content)){
+         $this->setErrorMessage("Bad move! Try removing the task instead of deleting its content.");
+         return null;
+      }
    }
 
    public function setAsDone($uuid){
@@ -55,11 +74,23 @@ class Task {
    public function getTask(){
       return $this;
    }
+
+   private function setErrorMessage($message){
+      $this->$errorMessage = $message;
+   }
+
+   public function getErrrorMessage(){
+      return $this->$errorMessage;
+   }
    
    //Reflector mehods to DBMock
    public static function save($domain){
       $db = DBMock::getInstance();
       $saved = $db->add($domain);
+      $saved = $db->add($domain);
+      echo('<pre>');
+      var_dump($db->findAll());
+      exit;
       return $saved;
    }
 

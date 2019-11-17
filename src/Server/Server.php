@@ -17,7 +17,7 @@ class Server
 
         switch ($method) {
             case 'GET':
-                if (count($param) > 1) {
+                if (count($param) > 1 && !empty($param[1])) {
                     $method = self::camelize(strtolower('FIND_ONE'));
                 } else {
                     $method = strtolower('FIND');

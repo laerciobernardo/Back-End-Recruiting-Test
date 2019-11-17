@@ -10,7 +10,7 @@ class TaskCtrl
     public function find($param)
     {
         $tasks = Model::find();
-
+        
         if (!$tasks) {
             http_response_code(200);
             return json_encode(array("message" => "Wow. You have nothing else to do. Enjoy the rest of your day!"));
@@ -21,13 +21,14 @@ class TaskCtrl
 
     public function findOne($param)
     {
+
         $task = Model::find();
         if (!$task) {
             http_response_code(200);
             return json_encode(array("message" => "Wow. You have nothing else to do. Enjoy the rest of your day!"));
         }
         http_response_code(200);
-        return json_encode($tasks);
+        return json_encode($task);
     }
 
     public function create($param, $payload)
@@ -36,6 +37,12 @@ class TaskCtrl
         echo "<pre>";
         var_dump($param);
         var_dump($payload);
+        exit;
+        $task = new Model($payload);
+        if(!$task){
+            return array(statusCode => 500, data => $task->getErrrorMessage());
+        }
+
         return array(statusCode => 200, data => 'Success');
     }
 
