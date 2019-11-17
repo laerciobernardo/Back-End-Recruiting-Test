@@ -33,17 +33,15 @@ class TaskCtrl
 
     public function create($param, $payload)
     {
-        echo "no method create";
-        echo "<pre>";
-        var_dump($param);
-        var_dump($payload);
-        exit;
-        $task = new Model($payload);
-        if(!$task){
-            return array(statusCode => 500, data => $task->getErrrorMessage());
+
+        $task = new Model($payload['type'], $payload['content'], $payload['sortOrder']);
+
+        if(empty($task->getUUID())){
+            return array('statusCode' => 500, 'data' => $task->getErrrorMessage());
         }
 
-        return array(statusCode => 200, data => 'Success');
+        $task->save($task);
+        return array('statusCode' => 200, 'data' => json_encode($task));
     }
 
     public function update($param, $payload)
@@ -52,7 +50,7 @@ class TaskCtrl
         echo "<pre>";
         var_dump($param);
         var_dump($payload);
-        return array(statusCode => 200, data => 'Success');
+        return array('statusCode' => 200, 'data' => 'Success');
     }
 
     public function remove($param)
@@ -60,6 +58,6 @@ class TaskCtrl
         echo "no method remove";
         echo "<pre>";
         var_dump($param);
-        return array(statusCode => 200, data => 'Success');
+        return array('statusCode' => 200, 'data' => 'Success');
     }
 }

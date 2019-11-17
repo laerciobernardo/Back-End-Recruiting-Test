@@ -18,17 +18,17 @@ class DBMock extends Singleton
 
     public function add($domain)
     {
-        array_push($this->$collection, $domain);
-        $this->store(COLLECTION_NAME, $this->$collection);
-        return $this->$collection;
+        array_push($this->collection, $domain);
+        $this->store(self::COLLECTION_NAME, $this->collection);
+        return $domain;
     }
 
     public function update($uuid, $domain)
     {
-        $idx = array_search($uuid, array_column(get_object_vars($this->$collection), 'uuid'));
+        $idx = array_search($uuid, array_column(get_object_vars($this->collection), 'uuid'));
         if ($idx) {
-            $this->$collection[$idx] = $domain;
-            $this->store(COLLECTION_NAME, $this->$collection);
+            $this->collection[$idx] = $domain;
+            $this->store(self::COLLECTION_NAME, $this->collection);
             return true;
         }
         return false;
@@ -36,10 +36,10 @@ class DBMock extends Singleton
 
     public function delete($uuid)
     {
-        $idx = array_search($uuid, array_column(get_object_vars($this->$collection), 'uuid'));
+        $idx = array_search($uuid, array_column(get_object_vars($this->collection), 'uuid'));
         if ($idx) {
-            array_splice($this->$collection, $idx, 1);
-            $this->store(self::COLLECTION_NAME, $this->$collection);
+            array_splice($this->collection, $idx, 1);
+            $this->store(self::COLLECTION_NAME, $this->collection);
             return true;
         }
         return false;
@@ -53,15 +53,18 @@ class DBMock extends Singleton
 
     public function findById($uuid)
     {
-        $idx = array_search($uuid, array_column($this->$collection, 'uuid'));
+        $idx = array_search($uuid, array_column($this->collection, 'uuid'));
         if ($idx) {
-            return $this->$collection[$idx];
+            return $this->collection[$idx];
         }
         return null;
     }
 
     private function store($fileName, $content)
     {
+        echo('<pre>');
+        var_dump($content);
+        exit;
         $file = fopen(self::DB_FILES . self::COLLECTION_NAME, 'w');
         fwrite($file, $content);
         fclose($file);

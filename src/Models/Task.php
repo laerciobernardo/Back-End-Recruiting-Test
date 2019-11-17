@@ -5,7 +5,7 @@ namespace App\Models;
 use App\DB\DBMock;
 
 class Task {
-   private $uui = "";
+   private $uuid = "";
    private $type = "";
    private $content = "";
    private $sortOrder = 0;
@@ -15,18 +15,18 @@ class Task {
    private $typesAllowed = ["shopping", "work"];
 
    public function __construct($type, $content, $sortOrder){
-      $this->validateType($type);
-      $this->validateContent($content);
+      if($this->validateType($type) && $this->validateContent($content)){
+         $this->uuid = md5(uniqid(rand(), true));
+         $this->type = $type;
+         $this->content = $content;
+         $this->sortOrder = $sortOrder;
+         $this->dateCreated = new \DateTime();
+      };
 
-      $this->uuid = md5(uniqid(rand(), true));
-      $this->type = $type;
-      $this->content = $content;
-      $this->sortOrder = $sortOrder;
-      $this->dateCreated = new \DateTime();
    }
 
    private function validateType($type){
-      if(!\in_array($type, $this->$typesAllowed)){
+      if(!\in_array($type, $this->typesAllowed)){
          $this->setErrorMessage("The task type you provided is not supported. You can only use shopping or work.");
          return null;
       }
@@ -44,11 +44,11 @@ class Task {
    }
 
    public function getUUID(){
-      return $this->$uuid;
+      return $this->uuid;
    }
 
    public function setType($type){
-      $this->$type = $type;
+      $this->type = $type;
    }
    
    public function getType(){
@@ -56,7 +56,7 @@ class Task {
    }
 
    public function setContent($content){
-      $this->$content = $content;
+      $this->content = $content;
    }
    
    public function getContent(){
@@ -64,7 +64,7 @@ class Task {
    }
 
    public function setSortOrder($order){
-      $this->$sortOrder = $order;
+      $this->sortOrder = $order;
    }
    
    public function getSortOrder(){
@@ -76,21 +76,17 @@ class Task {
    }
 
    private function setErrorMessage($message){
-      $this->$errorMessage = $message;
+      $this->errorMessage = $message;
    }
 
    public function getErrrorMessage(){
-      return $this->$errorMessage;
+      return $this->errorMessage;
    }
    
    //Reflector mehods to DBMock
    public static function save($domain){
       $db = DBMock::getInstance();
       $saved = $db->add($domain);
-      $saved = $db->add($domain);
-      echo('<pre>');
-      var_dump($db->findAll());
-      exit;
       return $saved;
    }
 
