@@ -13,15 +13,7 @@ class Server
         if (empty($param[0])) {
             array_shift($param);
         }
-        $contentType = self::getContentType($server);
         $payload = self::getpayload($server);
-        
-        //Convert urlencoded to JSON
-        if($contentType === "application/x-www-form-urlencoded"){
-            parse_str(urldecode($payload), $result);
-            $payload = \json_decode($result);
-        }
-
 
         switch ($method) {
             case 'GET':
@@ -62,7 +54,16 @@ class Server
         if (!isset($server['HTTP_CONTENT_LENGTH']) || !isset($server['CONTENT_LENGTH']) || !$server['HTTP_CONTENT_LENGTH'] || !$server['CONTENT_LENGTH']) {
             return null;
         }
-        return file_get_contents('php://input');
+        $content =  file_get_contents('php://input');
+        
+        $contentType = self::getContentType($server);
+        //Convert urlencoded to JSON
+        if($contentType === "application/x-www-form-urlencoded"){
+            parse_str(urldecode($content), $result);
+            return $result;
+        }
+
+        return \json_decode($content, true);
     }
 
     private function getContentType($server){
@@ -117,7 +118,7 @@ class Server
             return;
         }
 
-        $return = call_user_func_array(array(new $className, $method), array($param, json_decode($payload)));
+        $return = call_user_func_array(array(new $className, $method), array($param, $payload));
 
         echo json_encode($return);
     }
