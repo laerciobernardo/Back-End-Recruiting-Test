@@ -8,12 +8,20 @@ class Server
         $method = $server['REQUEST_METHOD'];
         $url = $server['REQUEST_URI'];
 
+        
         $param = explode('/', $url);
         if (empty($param[0])) {
             array_shift($param);
         }
-
+        $contentType = self::getContentType($server);
         $payload = self::getpayload($server);
+        
+        //Convert urlencoded to JSON
+        if($contentType === "application/x-www-form-urlencoded"){
+            parse_str(urldecode($payload), $result);
+            $payload = \json_decode($result);
+        }
+
 
         switch ($method) {
             case 'GET':
@@ -55,6 +63,16 @@ class Server
             return null;
         }
         return file_get_contents('php://input');
+    }
+
+    private function getContentType($server){
+        if (!isset($server['HTTP_CONTENT_TYPE']) || !isset($server['CONTENT_TYPE']) || !$server['HTTP_CONTENT_TYPE'] || !$server['CONTENT_TYPE']) {
+            return null;
+        }
+
+        $contentType =  $server['HTTP_CONTENT_TYPE'] ? $server['HTTP_CONTENT_TYPE'] : 
+                        $server['CONTENT_TYPE'] ? $server['CONTENT_TYPE'] : '';
+        return $contentType;
     }
 
     private function handlerpayloadError()
