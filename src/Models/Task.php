@@ -15,14 +15,16 @@ class Task {
    private $typesAllowed = ["shopping", "work"];
 
    public function __construct($type, $content, $sortOrder){
-      if($this->validateType($type) && $this->validateContent($content)){
+      
+      if(!$this->validateType($type) && !$this->validateContent($content)){
+         $this->uuid = "";
+      }else{
          $this->uuid = md5(uniqid(rand(), true));
          $this->type = $type;
          $this->content = $content;
          $this->sortOrder = $sortOrder;
          $this->dateCreated = new \DateTime();
-      };
-
+      }
    }
 
    private function validateType($type){
@@ -79,7 +81,7 @@ class Task {
       $this->errorMessage = $message;
    }
 
-   public function getErrrorMessage(){
+   public function getErrorMessage(){
       return $this->errorMessage;
    }
    

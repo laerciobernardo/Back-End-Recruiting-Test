@@ -10,7 +10,7 @@ class TaskCtrl
     public function find($param)
     {
         $tasks = Model::find();
-        
+
         if (!$tasks) {
             http_response_code(200);
             return json_encode(array("message" => "Wow. You have nothing else to do. Enjoy the rest of your day!"));
@@ -36,8 +36,11 @@ class TaskCtrl
 
         $task = new Model($payload['type'], $payload['content'], $payload['sortOrder']);
 
-        if(empty($task->getUUID())){
-            return array('statusCode' => 500, 'data' => $task->getErrrorMessage());
+        if (empty($task->getUUID())) {
+            echo('<pre>');
+            var_dump($task);
+            exit;
+            return array('statusCode' => 500, 'data' => $task->getErrorMessage());
         }
 
         $task->save($task);
